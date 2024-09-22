@@ -1,0 +1,44 @@
+#include "open_interface.h";
+#include "movement.h";
+
+/**
+ * main.c
+ */
+void main()
+{
+
+ oi_t *sensor_data = oi_alloc();
+ oi_init(sensor_data);
+// double sum = 0;
+// oi_setWheels(500, 500); // move forward; full speed
+// while (sum < 1000) {
+// oi_update(sensor_data);
+// sum += sensor_data->distance;
+// }
+// oi_setWheels(0, 0); // stop
+// oi_free(sensor_data);
+
+
+//    move_forward(sensor_data, 50); // ^
+//    turn_clockwise(sensor_data, 90); // ->
+//    move_forward(sensor_data, 50); //  -->
+//    turn_clockwise(sensor_data, 90); // down
+//    move_forward(sensor_data, 50); // bus down
+//    turn_clockwise(sensor_data, 90); // <-
+//    move_forward(sensor_data, 50); // <--
+
+//      move_forward(sensor_data, 50);
+//      turn_clockwise(sensor_data, 90);
+//      turn_counter_clockwise(sensor_data,90);
+//      turn_clockwise(sensor_data, 90);
+//      move_backward(sensor_data, 50);
+
+
+//      go_the_distance(sensor_data, 200);
+
+
+      oi_setWheels(0,0); // stop
+      oi_free(sensor_data);
+
+
+}
