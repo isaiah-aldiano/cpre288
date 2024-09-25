@@ -6,6 +6,8 @@
 #include "stdio.h"
 #include "cyBot_Scan.h"
 #include "ctype.h"
+#include "math.h"
+
 /*
  * Part 1:
  *
@@ -43,123 +45,129 @@ void main()
 //    cyBOT_init_Scan(features);
 //    cyBOT_SERVO_cal();
 
-
     cyBOT_init_Scan(features);
-    // Bot 15
-    right_calibration_value = 280000;
-    left_calibration_value = 1256500;
-//  Use if using new bot
-//  cyBOT_SERVO_cal();
+    // Bot 12
+    right_calibration_value = 217000;
+    left_calibration_value = 1167250;//  Use if using new bot
+    //  cyBOT_SERVO_cal();
 
+    float distances[90];
 
-    char str[] = "\033cDegrees   Distance(m)\r\n";
-    int j;
-    for(j = 0; j < strlen(str); j++) {
-        cyBot_sendByte(str[j]);
-    }
-
-
-
-    int i, k;
     cyBOT_Scan_t scan;
-    char buffer[20];
-    for(i = 0; i <= 180; i+=2) {
-        timer_waitMillis(100);
-        cyBOT_Scan(i, &scan);
-        sprintf(buffer, "%-10d%-10.2f\r\n", i, scan.sound_dist / 100);
-        for(k = 0; k < strlen(buffer); k++) {
-            cyBot_sendByte(buffer[k]);
-        }
-    }
+    char input = '0';
 
-    cyBOT_Scan(0, &scan);
+    while (true)
+    {
+        input = cyBot_getByte();
+        cyBot_sendByte(input);
+        int j;
 
-    FILE *fptr;
-    fptr = fopen("cleanup.txt", "r");
+        if (input == 'm')
+        {
+//            char str[] = "\033cDegrees   Distance(m)\r\n";
+//            for(j = 0; j < strlen(str); j++) {
+//                cyBot_sendByte(str[j]);
+//            }
+            int i;
+            float a;
+            int k;
+            char buffer[30];
+            for (i = 0; i <= 180; i += 2)
+            {
+                a = 0.0;
+                for (j = 0; j < 3; j++)
+                {
+                    cyBOT_Scan(i, &scan);
+                    a += scan.sound_dist / 100.0;
+                }
+                distances[i / 2] = a / 3;
 
-    i = 0;
-    int angle[91];
-    double distance[91];
-
-    char line[27];
-
-    while(i <=90) {
-        char ang[4];
-        char dis[5];
-
-        fgets(line, 27, fptr);
-        int c;
-        for(c = 0; c < 3; c++) {
-            if(isdigit(line[c])) {
-                ang[c] = line[c];
+                sprintf(buffer, "%-10d%-10.2f\r\n", i, distances[i / 2]);
+                for (k = 0; k < strlen(buffer); k++)
+                {
+                    cyBot_sendByte(buffer[k]);
+                }
             }
         }
-        int d;
-        for(d = 0; d < 5; d++) {
-            if(isdigit(line[d+10]) || line[d+10] == '.') {
-                dis[d] = line[d+10];
-            }
+        cyBOT_Scan(0, &scan);
+
+        /*Run 1 scan
+         * Pinging 3 times per angle
+         * Average the 3 pings
+         * Save average in array
+         * Run f function of the array
+         */
+
+        //Point at smallest object.
+        int i = 0;
+
+        float input = 0.00;
+        float prior = 0.00;
+        int cont = 0;
+        int writtenOBJ = 0;
+
+        struct obj
+        {
+            bool written;
+            char angle;
+            char distance;
+            char width;
+        };
+
+        struct obj listOfOBJ[5];
+        for (i = 0; i < 5; i++)
+        {
+            listOfOBJ[i].written = false;
         }
 
-        angle[i] = atoi(ang);
-        distance[i] = atof(dis);
+        for (i = 0; i < 91; i++)
+        {
+            input = distances[i];
 
-        i++;
-    }
-    double input = 0.00;
-    double prior = 0.00;
-    int cont = 0;
-    int writtenOBJ = 0;
+            if (input <= prior + 0.05 && input >= prior - 0.05)
+            {
+                cont++;
+                if (cont == 5)
+                {
+                    listOfOBJ[writtenOBJ].written = true;
+                    writtenOBJ++;
+                }
+            }
+            else
+            {
+                if (cont >= 5)
+                {
+                      listOfOBJ[writtenOBJ - 1].angle = i * 2 - cont;
+                      listOfOBJ[writtenOBJ - 1].distance = (char) distances[i * 2 - cont];
 
-    struct obj{
-        bool written;
-        int angle;
-        int distance;
-        int width;
-    };
+//                    listOfOBJ[writtenOBJ - 1].distance = distAvg;
+                      listOfOBJ[writtenOBJ - 1].width = ((char)listOfOBJ[writtenOBJ - 1].distance * sin(cont)) * 2;
+//                    listOfOBJ[writtenOBJ - 1].angle = i * 2 - listOfOBJ[writtenOBJ - 1].width / 2;
+                }
+                cont = 0;
+            }
+            prior = input;
+        }
 
-    struct obj listOfOBJ[5];
-    for(i = 0; i < 5; i++) {
-        listOfOBJ[i].written = false;
-    }
-    int x;
-    for(x = 0; x < 91; x++) {
-        input = distance[x];
+        int smallAngle = 0;
+        int min = 200;
 
-        if(input <= prior+0.05 && input >= prior-0.05) {
-            cont++;
-            if(cont == 5) {
-                listOfOBJ[writtenOBJ].written = true;
-                listOfOBJ[writtenOBJ].angle = x * 2 - 10;
-                writtenOBJ++;
+        printf("\nObject#   Angle     Distance  Width\n");
+
+        for (i = 0; i < 5; i++)
+        {
+            if (listOfOBJ[i].written)
+            {
+                printf("%-10d%-10d%-10d%-10d\n", i + 1, listOfOBJ[i].angle, listOfOBJ[i].distance, listOfOBJ[i].width);
+
+                if (listOfOBJ[i].width < min)
+                {
+                    min = listOfOBJ[i].width;
+                    smallAngle = listOfOBJ[i].angle;
+                }
             }
         }
-        else {
-            if(cont >= 5) {
-                listOfOBJ[writtenOBJ-1].width = cont * 2;
-                listOfOBJ[writtenOBJ-1].distance = distance[listOfOBJ[writtenOBJ-1].angle / 2] * 100;
-                listOfOBJ[writtenOBJ-1].angle += cont;
-            }
-            cont = 0;
-            }
-        prior = input;
+        printf("%d",  smallAngle);
+        cyBOT_Scan(smallAngle, &scan);
     }
-    int smallAngle = 0;
-    int min = 200;
-    int o;
-    for (o = 0; o < 5; o++) {
-        if(listOfOBJ[o].written) {
-            if(listOfOBJ[o].width < min) {
-                min = listOfOBJ[o].width;
-                smallAngle = listOfOBJ[o].angle;
-            }
-        }
-    }
-
-    cyBOT_Scan(smallAngle, &scan);
-
-
-
-
-//    return 0;
 }
