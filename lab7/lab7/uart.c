@@ -82,7 +82,7 @@ void UART1_Handler(void) {
     if(UART1_MIS_R & 0x10) {
         char input;
         input = uart_receive();
-        uart_sendChar(input);
+//        uart_sendChar(input);
         UART1_ICR_R |= 0x10;
     }
 }
