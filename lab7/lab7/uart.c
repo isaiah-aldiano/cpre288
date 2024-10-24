@@ -15,9 +15,7 @@
 
 
 
-
 void uart_init(void){
-	//TODO
     SYSCTL_RCGCGPIO_R |= 0x02;
     SYSCTL_RCGCUART_R |= 0x02;
     GPIO_PORTB_AFSEL_R = 0b00000011;
@@ -43,14 +41,17 @@ void uart_init(void){
 }
 
 void uart_sendChar(char data){
-	//TODO
-    while((UART1_FR_R & 0x20) != 0);
+
+    while((UART1_FR_R & 0x20) != 0) {
+
+    }
 
     UART1_DR_R = data;
 }
 
 char uart_receive(void){
 	char data = 0;
+//	short read = 0;
 
 	while((UART1_FR_R & UART_FR_RXFE)) {
 
@@ -62,15 +63,18 @@ char uart_receive(void){
 }
 
 void uart_sendStr(const char *data){
-	//TODO for reference see lcd_puts from lcd.c file
+    while(*data != '\0'){
 
+            uart_sendChar(*data);
+            data++;
+        }
 }
 
 void uart_interrupt_init(void) {
     UART1_CTL_R &= 0xFFFFFFFE;
     UART1_ICR_R = 0xFFFF;
     UART1_ICR_R = 0x0000;
-    UART1_IM_R |= 0x00000030;
+    UART1_IM_R |= 0x00000010;
     NVIC_PRI1_R |= 0x00200000;
     NVIC_EN0_R |= 0b01000000;
     IntRegister(INT_UART1, UART1_Handler);
@@ -79,10 +83,38 @@ void uart_interrupt_init(void) {
 }
 
 void UART1_Handler(void) {
+
     if(UART1_MIS_R & 0x10) {
         char input;
-        input = uart_receive();
-//        uart_sendChar(input);
+        input = UART1_DR_R & 0xFF;
+        uart_sendChar(input);
+
+        if(input == 't') {
+            mode = !mode;
+        }
+        else if(input == 'h') {
+            doSomething = 1;
+            hCount++;
+        }
+        else if(input == 'm') {
+            doSomething = 2;
+        }
+        else if(input == 'w') {
+            doSomething = 3;
+        }
+        else if(input == 's') {
+            doSomething = 4;
+        }
+        else if(input == 'a') {
+            doSomething = 5;
+        }
+        else if(input == 'd') {
+            doSomething = 6;
+        }
+
+
         UART1_ICR_R |= 0x10;
     }
+
+//    doSomething = input;
 }

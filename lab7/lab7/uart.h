@@ -18,6 +18,10 @@
 #include "Timer.h"
 #include <inc/tm4c123gh6pm.h>
 
+extern volatile int doSomething;
+extern volatile bool mode;
+extern volatile hCount;
+
 void uart_init(void);
 
 void uart_sendChar(char data);
