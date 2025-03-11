@@ -1,5 +1,4 @@
-.jxBrowser.userdata/
-.metadata/
+
 .tempFiles
 dvt/
 RemoteSystemsTempFiles/
@@ -12,5 +11,8 @@ RemoteSystemsTempFiles/
 */RemoteSystemsTempFiles
 
 .DS_Store
+
+.jxBrowser.userdata/
+.metadata/
 
 !*/
