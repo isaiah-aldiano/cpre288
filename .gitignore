@@ -1,0 +1,16 @@
+.jxBrowser.userdata/
+.metadata/
+.tempFiles
+dvt/
+RemoteSystemsTempFiles/
+
+*/.jxbrowser.userdata
+*/.metadata
+*/.launches
+*/Debug
+*/Release
+*/RemoteSystemsTempFiles
+
+.DS_Store
+
+!*/
