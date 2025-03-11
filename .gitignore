@@ -3,8 +3,8 @@
 dvt/
 RemoteSystemsTempFiles/
 
-*/.jxbrowser.userdata
-*/.metadata
+*/.jxbrowser.userdata/
+*/.metadata/
 */.launches
 */Debug
 */Release
@@ -12,7 +12,7 @@ RemoteSystemsTempFiles/
 
 .DS_Store
 
-.jxBrowser.userdata/
-.metadata/
+/.jxbrowser.userdata/
+/.metadata/
 
 !*/
