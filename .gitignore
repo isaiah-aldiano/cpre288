@@ -1,21 +1,14 @@
+.metadata/
 
-.tempFiles
-dvt/
-RemoteSystemsTempFiles/
+# Ignore everything
+*
 
-*/.jxbrowser.userdata/
-*/.metadata/
-*/.launches
-*/Debug
-*/Release
-*/RemoteSystemsTempFiles
+# Allow specific file types
+!*.c
+!*.h
+!*.py
+!*.md
+!*.xlsx
 
-.DS_Store
-
-/.jxbrowser.userdata/
-/.metadata/
-
-.jxbrowser.userdata
-.metadata
-
+# Ensure directories are tracked
 !*/
