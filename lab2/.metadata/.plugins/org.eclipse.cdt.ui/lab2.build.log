@@ -1,8 +1,0 @@
-
-**** Build of configuration Debug for project lab2 ****
-
-"C:\\ti\\ccs1271\\ccs\\utils\\bin\\gmake" -k -j 20 all -O 
- 
-gmake[1]: 'lab2.out' is up to date.
-
-**** Build Finished ****
