@@ -15,4 +15,7 @@ RemoteSystemsTempFiles/
 /.jxbrowser.userdata/
 /.metadata/
 
+.jxbrowser.userdata/
+.metadata/
+
 !*/
