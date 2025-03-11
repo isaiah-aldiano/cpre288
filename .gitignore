@@ -12,7 +12,7 @@ RemoteSystemsTempFiles/
 
 .DS_Store
 
-.jxBrowser.userdata/
-.metadata/
+.jxBrowser.userdata
+.metadata
 
 !*/
